@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Services;
 using Services.Contracts;
+using Services.EmailSenderService;
 using Services.IMDBService;
 
 namespace IMDbMovies
@@ -26,6 +27,11 @@ namespace IMDbMovies
             string connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddMvc();
 
+            var emailConfig = Configuration
+                 .GetSection("EmailConfiguration")
+                 .Get<EmailConfiguration>();
+
+            services.AddSingleton(emailConfig);
             services.AddSwaggerGen();
 
             services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection, builder => builder.MigrationsAssembly("IMDbMovies")));
@@ -33,7 +39,7 @@ namespace IMDbMovies
             services.Configure<ImdSettings>(Configuration.GetSection("ImdbSettings"));
 
             services.AddScoped<IMovieService, MovieService>();
-            services.AddScoped<IUserService, UserWatchListService>();
+            services.AddScoped<IUserWatchListService, UserWatchListService>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IIMDbService, IMDbService>();
         }

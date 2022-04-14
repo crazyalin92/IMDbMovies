@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Services.Contracts
 {
-    public interface IUserService
+    public interface IUserWatchListService
     {
         Task<ServiceResult<List<WatchItemDto>>> GetWatchListForUser(int userId);
         Task<ServiceResult<User>> GetUsersById(int userId);

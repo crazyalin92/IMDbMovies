@@ -7,9 +7,9 @@ namespace IMDbMovies
 {
     public class UserWatchListController : ControllerBase
     {
-        private readonly IUserService userService;
+        private readonly IUserWatchListService userService;
 
-        public UserWatchListController(IUserService userService)
+        public UserWatchListController(IUserWatchListService userService)
         {
             this.userService = userService;
         }

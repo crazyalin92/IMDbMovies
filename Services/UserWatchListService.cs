@@ -12,11 +12,12 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class UserWatchListService : IUserService
+    public class UserWatchListService : IUserWatchListService
     {
         private readonly IRepository<User> userRepository;
         private readonly IRepository<WatchItem> userWatchlistRepo;
         private readonly ILogger<UserWatchListService> logger;
+
         public UserWatchListService(IRepository<User> userRepository,
             IRepository<WatchItem> userWatchlistRepo, ILogger<UserWatchListService> logger)
         {
