@@ -42,6 +42,8 @@ namespace IMDbMovies
             services.AddScoped<IUserWatchListService, UserWatchListService>();
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IIMDbService, IMDbService>();
+            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<INotificationService, NotificationService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

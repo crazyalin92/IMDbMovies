@@ -1,9 +1,10 @@
 ﻿using Services.EmailSenderService;
+using System.Threading.Tasks;
 
 namespace Services.Contracts
 {
     public interface IEmailSender
     {
-        bool SendEmail(Message message);
+        Task<bool> SendEmailAsync(Message message);
     }
 }

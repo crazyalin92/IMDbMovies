@@ -2,21 +2,23 @@
 using MimeKit;
 using Services.Contracts;
 using System;
+using System.Threading.Tasks;
 
 namespace Services.EmailSenderService
 {
     public class EmailSender : IEmailSender
     {
         private readonly EmailConfiguration _emailConfig;
-        public bool isSuccess { get; set; }
+
         public EmailSender(EmailConfiguration emailConfig)
         {
             _emailConfig = emailConfig;
         }
-        public bool SendEmail(Message message)
+
+        public async Task<bool> SendEmailAsync(Message message)
         {
             var emailMessage = CreateEmailMessage(message);
-            return Send(emailMessage);
+            return await SendAsync(emailMessage);
         }
 
         private MimeMessage CreateEmailMessage(Message message)
@@ -25,11 +27,11 @@ namespace Services.EmailSenderService
             emailMessage.From.Add(new MailboxAddress(_emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Text) { Text = message.Content };
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message.Content };
             return emailMessage;
         }
 
-        private bool Send(MimeMessage mailMessage)
+        private async Task<bool> SendAsync(MimeMessage mailMessage)
         {
             bool isSuccess = false;
 
@@ -37,10 +39,10 @@ namespace Services.EmailSenderService
             {
                 try
                 {
-                    client.Connect(_emailConfig.SmtpServer, _emailConfig.Port, true);
+                    await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, true);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
-                    client.Send(mailMessage);
+                    await client.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
+                    await client.SendAsync(mailMessage);
 
                     isSuccess = true;
                 }
@@ -48,11 +50,11 @@ namespace Services.EmailSenderService
                 {
                     isSuccess = false;
 
-                    //TODO: log an error message or throw an exception or both. 
+                    throw;
                 }
                 finally
                 {
-                    client.Disconnect(true);
+                    await client.DisconnectAsync(true);
                     client.Dispose();
                 }
 

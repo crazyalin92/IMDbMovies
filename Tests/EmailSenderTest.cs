@@ -9,7 +9,7 @@ namespace Tests
     public class EmailSenderTest
     {
         [Fact]
-        public void SendEmailTest_ShouldSend()
+        public async void SendEmailTest_ShouldSend()
         {
             //TODO: take from appsettings
             EmailConfiguration config = new EmailConfiguration
@@ -34,9 +34,9 @@ namespace Tests
                 To = senderList
             };
 
-            bool isSend = emailSender.SendEmail(msg);
+            bool isSend = await emailSender.SendEmailAsync(msg);
 
-            Assert.Equal(true, isSend);
+            Assert.True(isSend);
         }
     }
 }
