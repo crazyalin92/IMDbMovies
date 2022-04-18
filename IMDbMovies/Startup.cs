@@ -1,5 +1,7 @@
 using DataAccess.DataBase;
 using DataAccess.Repositories;
+using Hangfire;
+using Hangfire.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using Services;
 using Services.Contracts;
 using Services.EmailSenderService;
 using Services.IMDBService;
+using System;
 
 namespace IMDbMovies
 {
@@ -46,7 +49,8 @@ namespace IMDbMovies
             services.AddScoped<INotificationService, NotificationService>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
+            IRecurringJobManager jobManager, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -66,6 +70,12 @@ namespace IMDbMovies
             {
                 endpoints.MapControllers();
             });
+
+            //Email sender scheduler
+            //sends emails every sunday at 19.30
+            var schedulerService = serviceProvider.GetService<INotificationService>();
+            string cron = Cron.Weekly(DayOfWeek.Sunday, 19, 30);
+            jobManager.AddOrUpdate("email_notifications", Job.FromExpression(() => schedulerService.SendNotifications()), cron, TimeZoneInfo.Utc);
         }
     }
 }
